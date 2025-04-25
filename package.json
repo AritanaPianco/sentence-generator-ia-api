@@ -2,6 +2,7 @@
   "name": "openia",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "build": "tsup",
     "dev": "tsx watch ./src/teste.ts",
@@ -21,6 +22,7 @@
     "@commitlint/cli": "^19.8.0",
     "@commitlint/config-conventional": "^19.8.0",
     "@types/node": "^22.14.1",
+    "@types/uuid": "^10.0.0",
     "commitizen": "^4.3.1",
     "cz-conventional-changelog": "^3.3.0",
     "husky": "^9.1.7",
@@ -35,5 +37,8 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "dependencies": {
+    "uuid": "^11.1.0"
   }
 }
