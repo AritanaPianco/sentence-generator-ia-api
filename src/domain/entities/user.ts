@@ -8,15 +8,28 @@ export type UserProps = {
 
 export class User {
   constructor(
-    private readonly id: string,
-    private readonly name: string,
-    private readonly email: string,
-    private readonly password: string,
+    private readonly _id: string,
+    private readonly _name: string,
+    private readonly _email: string,
+    private readonly _password: string,
   ) {}
 
-  static create({ name, email, password }: UserProps) {
-    const id = uuidv4();
-    const user = new User(id, name, email, password);
+  get id(): string {
+    return this._id;
+  }
+  get name(): string {
+    return this._name;
+  }
+  get email(): string {
+    return this._email;
+  }
+  get password(): string {
+    return this._password;
+  }
+
+  static create({ name, email, password }: UserProps, id?: string) {
+    const newId = id ?? uuidv4();
+    const user = new User(newId, name, email, password);
     return user;
   }
 }
