@@ -1,16 +1,15 @@
-import { SingUpUseCase } from '@/data/usecases/users/singup';
+import { LoginUseCase } from '@/data/usecases/users/login';
 import type { FastifyInstance } from 'fastify';
 import type { ZodTypeProvider } from 'fastify-type-provider-zod';
 import { container } from 'tsyringe';
 import z from 'zod';
 
-export async function SignUpRoute(app: FastifyInstance) {
+export async function LoginRoute(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
-    '/singup',
+    '/login',
     {
       schema: {
         body: z.object({
-          name: z.string({ required_error: 'O nome é obrigatório' }),
           email: z
             .string({ required_error: 'O Email é obrigatorio' })
             .email({ message: 'O email deve ser válido' }),
@@ -21,11 +20,11 @@ export async function SignUpRoute(app: FastifyInstance) {
       },
     },
     async (request, reply) => {
-      const singUpUseCase = container.resolve(SingUpUseCase);
+      const loginUseCase = container.resolve(LoginUseCase);
 
-      const { email, name, password } = request.body;
+      const { email, password } = request.body;
 
-      const response = await singUpUseCase.execute({ name, email, password });
+      const response = await loginUseCase.execute({ email, password });
 
       if (typeof response === 'object') {
         reply.status(response.status).send({

@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsx watch ./src/infra/server.ts",
-    "start": "node dist/infra/server.js",
+    "start": "node dist/infra/server.cjs",
     "lint": "biome check ./src",
     "lint:fix": "biome check ./src --fix",
     "test": "vitest run --passWithNoTests",
