@@ -18,10 +18,10 @@ export class UsersTokenRepositoryInMemory implements UserTokenRepository {
     return userToken[0];
   }
   async updateAccessToken(userId: string, token: string): Promise<void> {
-    const index = this.usersToken.findIndex((user) => user.id === userId);
+    const index = this.usersToken.findIndex((user) => user.userId === userId);
     const userToken = this.usersToken[index];
     const updatedUserToken = UserToken.create(
-      { userId: userToken.id, token: token },
+      { userId: userToken.userId, token: token },
       userToken.id,
     );
     this.usersToken[index] = updatedUserToken;

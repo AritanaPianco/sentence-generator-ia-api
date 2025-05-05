@@ -41,6 +41,7 @@ export class SingUpUseCase {
       password: hashedPassword,
     });
 
+    await this.usersRepository.create(user);
     const token = await this.encrypter.encrypt(user.id);
     const userToken = UserToken.create({ userId: user.id, token });
 

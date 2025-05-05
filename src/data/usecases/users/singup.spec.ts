@@ -4,21 +4,21 @@ import { FakeEncrypter } from '@/test/cryptography/faker-encrypter';
 import { FakeHasher } from '@/test/cryptography/faker-hasher';
 import { UsersRepositoryInMemory } from '@/test/in-memory/users-repository-in-memory';
 import { UsersTokenRepositoryInMemory } from '@/test/in-memory/users-tokens-repository-in-memory';
-import { LoginUseCase } from './login';
+import { SingUpUseCase } from './singup';
 
 let usersRepository: UsersRepositoryInMemory;
 let usersTokenRepository: UsersTokenRepositoryInMemory;
 let bcryptAdapter: FakeHasher;
 let jwtAdapter: FakeEncrypter;
-let sut: LoginUseCase;
+let sut: SingUpUseCase;
 
-describe('Login UseCase', () => {
+describe('SignUp UseCase', () => {
   beforeEach(() => {
     usersRepository = new UsersRepositoryInMemory();
     usersTokenRepository = new UsersTokenRepositoryInMemory();
     bcryptAdapter = new FakeHasher();
     jwtAdapter = new FakeEncrypter();
-    sut = new LoginUseCase(
+    sut = new SingUpUseCase(
       usersRepository,
       usersTokenRepository,
       bcryptAdapter,
@@ -26,18 +26,7 @@ describe('Login UseCase', () => {
     );
   });
 
-  test('should return 401 if email is not found', async () => {
-    const response = await sut.execute({
-      email: 'any_email',
-      password: 'any_password',
-    });
-
-    if (typeof response === 'object') {
-      expect(response.message).toEqual('Email não encontrado!');
-      expect(response.status).toEqual(401);
-    }
-  });
-  test('should return 401 if an invalid password is provided', async () => {
+  test('should return 401 if email already exist', async () => {
     const user = User.create({
       name: 'any_name',
       email: 'any_email',
@@ -45,36 +34,27 @@ describe('Login UseCase', () => {
     });
 
     await usersRepository.create(user);
+
     const response = await sut.execute({
+      name: 'any_name',
       email: 'any_email',
-      password: 'wrong_password',
+      password: 'any_password',
     });
     if (typeof response === 'object') {
-      expect(response.message).toEqual('Senha inválida!');
-      expect(response.status).toEqual(401);
+      expect(response.status).toEqual(409);
+      expect(response.message).toEqual('Email já em uso!');
     }
   });
 
   test('should return an accessToken on success', async () => {
-    const user = User.create({
-      name: 'any_name',
-      email: 'any_email',
-      password: 'hashed-any_password',
-    });
-
-    const userToken = UserToken.create({
-      userId: user.id,
-      token: 'any_token',
-    });
-
-    await usersTokenRepository.create(userToken);
-
-    await usersRepository.create(user);
+    const createSpy = vi.spyOn(usersRepository, 'create');
     const response = await sut.execute({
+      name: 'any_name',
       email: 'any_email',
       password: 'any_password',
     });
 
-    expect(response).toEqual(`encrypted-${user.id}`);
+    expect(response).toBeDefined();
+    expect(createSpy).toHaveBeenCalled();
   });
 });
